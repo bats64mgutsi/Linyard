@@ -5,6 +5,8 @@
 
 library linyard;
 
+import 'dart:typed_data';
+
 import 'package:vector_math/vector_math.dart';
 
 part 'src/rendering.dart';

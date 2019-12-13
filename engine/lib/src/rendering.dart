@@ -52,12 +52,14 @@ class ContextShaderProgram extends ShaderProgram {
 class Renderable {
 
   final ShaderProgram shaderProgram;
-  final List<double>  vertices;
-  final List<double>  indices;
+  final Float32List   vertices;
+  final Int32List     indices;
+  final Float32List   colors;
+  final Matrix3       transform;
   final Texture       texture;
-  final List<double>  texCoords;
+  final Int32List     texCoords;
 
-  Renderable({this.shaderProgram, this.vertices, this.indices, this.texture, this.texCoords});
+  Renderable({this.shaderProgram, this.vertices, this.indices, this.colors, this.transform, this.texture, this.texCoords});
 }
 
 /// A texture
