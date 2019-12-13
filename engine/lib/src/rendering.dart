@@ -1,9 +1,11 @@
 
 part of linyard;
 
-/// The vertex and fragment shader to be used by a renderable. The shaders must be given
-/// in source form. The shaders must be suitable for the used [Renderer]. For using specific
-/// shaders for a certain graphics library see [ContextShaders]
+/// The vertex and fragment shader to be used by a renderable.
+/// 
+/// The shaders must be given in source form. The shaders must be 
+/// suitable for the used [Renderer]. For using specific
+/// shaders for a certain graphics library see [ContextShaderProgram]
 class ShaderProgram {
 
   /// The vertex shader
@@ -19,12 +21,14 @@ class ShaderProgram {
 }
 
 
-/// Selects the right shader to used from the given ones based on the graphics library used by
-/// the used [Renderer]
+/// Selects the right shader to be used based on the graphics library the used [Renderer] uses
 class ContextShaderProgram extends ShaderProgram {
 
-  final ShaderProgram gl;    // desktop opengl
-  final ShaderProgram gles;  // mobile and webgl
+  // Mesktop opengl
+  final ShaderProgram gl;
+
+  // Mobile and webgl
+  final ShaderProgram gles;
 
   // The vulkan shader program is this object itself
 
@@ -47,14 +51,15 @@ class ContextShaderProgram extends ShaderProgram {
 }
 
 
-/// Represents an object that can be drwan on screen from vertices. A renderer may extend this class
-/// to describe the renderables it prefers
+/// Represents an object that can be drwan on screen from vertices.
+/// 
+/// A renderer may extend this class to describe the renderables it prefers
 class Renderable {
 
   final ShaderProgram shaderProgram;
   final Float32List   vertices;     // vec3
   final Int32List     indices;
-  final Float32List   colors;
+  final Float32List   colors;       // vec4
   final Matrix3       transform;
   final Texture       texture;
   final Int32List     texCoords;
@@ -184,25 +189,31 @@ class GlesRenderer implements Renderer{
 
   }
 
-  /// Releases all rendering resources. After this method is called the renderer is no longer usable
+  /// Releases all rendering resources.
+  /// 
+  /// After this method is called the renderer is no longer usable
   @override
   void destroy(){
 
     //TODO: Implement
   }
 
-  /// Adds [renderable] to the list of renderables. Initially the [Renderable] is visible.
-  /// To hide it call [hide]. The corresponding vbo objects will be created and filled with
-  /// [renderable] data. Therefore this method should only be called after [initialise] is
-  /// called.
+  /// Adds [renderable] to the list of renderables.
+  /// 
+  /// Initially the [Renderable] is visible. To hide it call [hide].
+  /// The corresponding vbo objects will be created and filled with
+  /// [renderable]'s data. Therefore this method should only be called 
+  /// after [initialise].
   @override
   void add(Renderable renderable){
 
     /// create vbos and add the object to list of visible renderables
   }
 
-  /// Removed [renderable] as an object to be drawn. The corresponding vbos will be destroyed.
-  /// This [renderable] can be added back again.
+  /// Remove [renderable] as an object to be drawn.
+  /// 
+  /// The corresponding vbos will be destroyed. This [renderable] can be
+  /// added back again.
   @override
   Renderable remove(Renderable renderable){
 
@@ -221,7 +232,7 @@ class GlesRenderer implements Renderer{
       visible.add(renderable);
   }
 
-  /// Draw all the visible renderables
+  /// Draw all the visible [Renderable]s
   void draw(){
     gl.clear(WebGL.COLOR_BUFFER_BIT);
   }
