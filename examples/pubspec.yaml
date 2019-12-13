@@ -1,0 +1,8 @@
+name: examples
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+  linyard:
+    path: ../engine
