@@ -139,7 +139,7 @@ class GlesRenderer implements Renderer{
   @override
   void initialise({int width, int height}) {
 
-    // Compile shaders and link the shaders
+    // Compile and link the shaders
     String vShader = """
     attribute vec3 position;
     attribute vec4 color;
@@ -175,6 +175,7 @@ class GlesRenderer implements Renderer{
     gl.useProgram(program);
 
     // Check if shaders were compiled properly
+    
     if (!gl.getShaderParameter(vs, WebGL.COMPILE_STATUS)) { 
       onError(gl.getShaderInfoLog(vs));
     }
