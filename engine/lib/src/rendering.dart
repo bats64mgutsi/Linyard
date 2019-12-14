@@ -17,6 +17,8 @@ class ShaderProgram {
   ShaderProgram({this.vShader, this.fShader});
 
   /// Any subclasses of this class can override this to prepare themselves for use by [renderer]
+  /// 
+  /// The returned [ShaderProgram] is the one to be used
   ShaderProgram prepare(Renderer renderer) => this;
 }
 
@@ -51,9 +53,11 @@ class ContextShaderProgram extends ShaderProgram {
 }
 
 
-/// Represents an object that can be drwan on screen from vertices.
+/// Describes an object that can be drawn on screen from vertices.
 /// 
-/// A renderer may extend this class to describe the renderables it prefers
+/// This class may be extended to add renderer specific definitions
+/// This class is not meant for storage by renderers as it is just
+/// a definition.
 class Renderable {
 
   final ShaderProgram shaderProgram;
@@ -62,7 +66,7 @@ class Renderable {
   final Float32List   colors;       // vec4
   final Matrix3       transform;
   final Texture       texture;
-  final Int32List     texCoords;
+  final Float32List   texCoords;
 
   Renderable({this.shaderProgram, this.vertices, this.indices, this.colors, this.transform, this.texture, this.texCoords});
 }
@@ -95,24 +99,54 @@ abstract class Renderer{
   set clearColor(Vector4 color);
 
   /// Add a new [Renderable] to be drawn
-  void add(Renderable renderable);
+  void add(Renderable def);
 
   /// Stop drawing [renderable] and remove. Returns the removed renderable on success, null on error
-  Renderable remove(Renderable renderable);
+  /// returns true if [renderable] was removed
+  bool remove(LoadedRenderable renderable);
 
   /// Pause the rendering of [renderable]
-  void hide(Renderable renderable);
+  void hide(LoadedRenderable renderable);
 
   /// Resume the rendering of [renderable]
-  void show(Renderable renderable);
+  void show(LoadedRenderable renderable);
 
   /// Draw all the visible renderables
   void draw();
+
+  factory Renderer({RenderingContext gl, ErrorCallback onError}){
+    return GlesRenderer(
+      gl: gl,
+      onError: onError,
+    );
+  }
+
+}
+
+/// Represents a [Renderable] that has been loaded to used [Renderer]
+/// 
+/// It is safe to change or modify [transform] in rendering
+/// loop
+class LoadedRenderable {
+  Matrix3 transform;
 }
 
 
 /// An error callback
 typedef void ErrorCallback(Object error);
+
+
+
+
+
+/**
+ *    GLES Rendering
+ */
+
+/// A Loaded [Renderable] for the GlesRenderer
+class _GlesLoadedRenderable extends LoadedRenderable {
+  Buffer vertexVbo, colorVbo;
+}
 
 /// A Gles2 renderer. This renderer should work on web, mobile and desktop
 class GlesRenderer implements Renderer{
@@ -122,8 +156,13 @@ class GlesRenderer implements Renderer{
 
   GlesRenderer({this.gl, this.onError});
 
-  final List<Renderable> visible = List();
-  final List<Renderable> hidden  = List();
+  final List<_GlesLoadedRenderable> visible = List();
+  final List<_GlesLoadedRenderable> hidden  = List();
+
+  // Vertex attributes and shader uniforms
+  int positionAttribute;
+  int colorAttribute;
+  UniformLocation transfromUniform;
 
   /// The graphics library used by this renderer, which is OpenGLEs
   GraphicsLib get graphicsLib => GraphicsLib.GLES;
@@ -143,7 +182,7 @@ class GlesRenderer implements Renderer{
     String vShader = """
     attribute vec3 position;
     attribute vec4 color;
-    attribute mat3 transform;
+    uniform mat3 transform;
 
     varying vec4 vColor;
     void main(){
@@ -189,6 +228,9 @@ class GlesRenderer implements Renderer{
       onError(gl.getProgramInfoLog(program));
     }
 
+    positionAttribute = gl.getAttribLocation(program, "position");
+    colorAttribute = gl.getAttribLocation(program, "color");
+    transfromUniform = gl.getUniformLocation(program, "transform");
   }
 
   /// Releases all rendering resources.
@@ -207,9 +249,9 @@ class GlesRenderer implements Renderer{
   /// [renderable]'s data. Therefore this method should only be called 
   /// after [initialise].
   @override
-  void add(Renderable renderable){
+  void add(Renderable def){
 
-    /// create vbos and add the object to list of visible renderables
+    
   }
 
   /// Remove [renderable] as an object to be drawn.
@@ -217,19 +259,20 @@ class GlesRenderer implements Renderer{
   /// The corresponding vbos will be destroyed. This [renderable] can be
   /// added back again.
   @override
-  Renderable remove(Renderable renderable){
+  bool remove(LoadedRenderable renderable){
 
     //TODO: implement
+    return true;
   }
 
   /// Pause the rendering of [renderable]
-  void hide(Renderable renderable){
+  void hide(LoadedRenderable renderable){
     if(visible.remove(renderable))
       hidden.add(renderable);
   }
 
   /// Resume the rendering of [renderable]
-  void show(Renderable renderable){
+  void show(LoadedRenderable renderable){
     if(hidden.remove(renderable))
       visible.add(renderable);
   }
@@ -238,4 +281,6 @@ class GlesRenderer implements Renderer{
   void draw(){
     gl.clear(WebGL.COLOR_BUFFER_BIT);
   }
+
+
 }
