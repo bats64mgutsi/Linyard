@@ -1,0 +1,9 @@
+name: linyard_tools
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+  io: ^0.3.3
+  path: ^1.6.4
+  watcher: ^0.9.7+13

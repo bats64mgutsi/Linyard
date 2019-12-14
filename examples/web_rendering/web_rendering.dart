@@ -10,16 +10,19 @@ void draw(num delta){
   renderer.draw();
   window.animationFrame.then(draw);
 }
+ 
+void main() { 
 
-void main() {
+  window.alert("Hello World!");
 
   // Get the view where the image will be shown
   CanvasElement canvas = Document().getElementById("view");
   var gl = canvas.getContext3d();
   if(gl == null){
     showError("Unfortunately your browser does not support OpenGL");
-    return;
+    return; 
   }
+
 
   renderer = GlesRenderer(
     gl: gl,
@@ -29,7 +32,6 @@ void main() {
   renderer.initialise();
   window.animationFrame.then(draw);
 }
-
 
 
 String errorMessages = "";
