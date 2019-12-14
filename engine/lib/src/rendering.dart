@@ -137,7 +137,7 @@ class GlesRenderer implements Renderer{
   /// Initialise a rendering surface. [Renderable] objects should be added after 
   /// this method is called.
   @override
-  void initialise({int width, int height}) {
+  void initialise() {
 
     // Compile and link the shaders
     String vShader = """
