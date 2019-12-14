@@ -22,7 +22,7 @@ void main() {
     return; 
   }
 
-  renderer = GlesRenderer(
+  renderer = Renderer(
     gl: gl,
     onError: showError,
   );
