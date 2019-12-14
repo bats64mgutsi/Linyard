@@ -147,12 +147,13 @@ class GlesRenderer implements Renderer{
 
     varying vec4 vColor;
     void main(){
-      gl_Position = position*transform;
+      gl_Position = vec4(position*transform, 1.0);
       vColor = color;
     }
     """;
 
     String fShader = """
+    precision mediump float;
     varying vec4 vColor;
 
     void main(){

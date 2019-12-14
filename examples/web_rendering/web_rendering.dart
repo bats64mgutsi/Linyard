@@ -2,6 +2,7 @@
 
 import 'dart:html';
 
+import 'package:vector_math/vector_math.dart';
 import 'package:linyard/linyard.dart';
 
 Renderer renderer;
@@ -13,16 +14,13 @@ void draw(num delta){
  
 void main() { 
 
-  window.alert("Hello World!");
-
   // Get the view where the image will be shown
-  CanvasElement canvas = Document().getElementById("view");
+  CanvasElement canvas = document.getElementById("view");
   var gl = canvas.getContext3d();
   if(gl == null){
     showError("Unfortunately your browser does not support OpenGL");
     return; 
   }
-
 
   renderer = GlesRenderer(
     gl: gl,
@@ -30,6 +28,7 @@ void main() {
   );
 
   renderer.initialise();
+  renderer.clearColor = Vector4.random();
   window.animationFrame.then(draw);
 }
 
@@ -37,5 +36,5 @@ void main() {
 String errorMessages = "";
 void showError(Object error){
   errorMessages += "$error<br />";
-  Document().getElementById("errorDiv").innerHtml = errorMessages;
+  document.getElementById("errorDiv").innerHtml = errorMessages;
 }
