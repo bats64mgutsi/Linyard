@@ -84,8 +84,9 @@ void runWeb(Directory source, File mainScript, Directory bin) async {
         "${bin.path}/main.js",
         "${mainScript.path}"
       ]);
-      if(await spawn.exitCode != 0)
-        error("dart2js returned with errors");
+      await spawn.exitCode;
+      // if(await spawn.exitCode != 0)
+      //   error("dart2js returned with errors");
     } on Error {
       print("bad state...");
     }
