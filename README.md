@@ -5,7 +5,8 @@ managers or central classes, almost everything is treated as data.
 
 ## Running the examples
 You must have the Dart SDK installed. Its bin folder shoudld be on your PATH
-variable. Use the [run.dart](tools/run.dart) script to the examples or Linyard apps of your own.
+variable. Use the [run.dart](tools/run.dart) script to the examples or Linyard apps of your own. Be sure to first run *pub get* on all folders containing a
+*pubspec.yaml* file.
 
 ### usage:
 dart run.dart [mainScript] [target]

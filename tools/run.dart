@@ -44,7 +44,7 @@ void main(List<String> args) async {
   else if(target == "onAndroid")
     runAndroid(mainScript.parent, mainScript, bin);
   else
-    error("$target is not a target- use onWeb, onDesktop, or Android");
+    error("$target is not a target- use onWeb, onDesktop, or onAndroid");
 }
 
 /// Exit with the given error mesage
@@ -64,9 +64,9 @@ void clearFolder(Directory directory){
 /// Builds for web
 /// 
 /// The contents under the web folder are all copied to [bin]. The [mainScript] is compiled
-/// to main.js into the [bin] folder as well. Once the initial build is done an isolate will
-/// be spawned. This isolate will constantly monitor [source] for any changes. Shall
-/// changes happen the project will be rebuilt, the user will have to reload the web page.
+/// to main.js into the [bin] folder as well. Once the initial build is done the [source]
+/// will be monitored for any file modification changes. Shall changes happen the project 
+/// will be rebuilt, the user will have to reload the web page.
 void runWeb(Directory source, File mainScript, Directory bin) async {
   copyPathSync("../web", bin.path);
   print("...Now compiling ${mainScript.path}, dart2js should be in your PATH variable");
@@ -85,14 +85,13 @@ void runWeb(Directory source, File mainScript, Directory bin) async {
         "${mainScript.path}"
       ]);
       await spawn.exitCode;
-      // if(await spawn.exitCode != 0)
-      //   error("dart2js returned with errors");
     } on Error {
       print("bad state...");
     }
 
   };
 
+  // Initial build
   await build();
   
   // Everytime the source dir changes we compile accordingly
@@ -104,7 +103,7 @@ void runWeb(Directory source, File mainScript, Directory bin) async {
   );
 
 
-  // Server the contents of bin
+  // Serve the contents of bin
   HttpServer.bind(InternetAddress.anyIPv4, 0).then((server){
     server.listen((req){
 
