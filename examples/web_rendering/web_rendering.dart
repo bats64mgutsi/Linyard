@@ -1,6 +1,7 @@
 /// This example demonstrates simple rendering with webgl
 
 import 'dart:html';
+import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
 import 'package:linyard/linyard.dart';
@@ -22,13 +23,37 @@ void main() {
     return; 
   }
 
+  // Initialise a renderer
   renderer = Renderer(
     gl: gl,
     onError: showError,
   );
-
   renderer.initialise();
   renderer.clearColor = Vector4.random();
+
+  // Add a triangle to be drawn
+  renderer.add(
+    Renderable(
+      vertices: Float32List.fromList([
+        -0.5, 0.5, 0.0,
+        -0.5, -0.5, 0.0,
+        0.5, -0.5, 0.0,
+      ],),
+
+      indices: Int32List.fromList([
+        1, 2, 3
+      ]),
+
+      colors: Float32List.fromList(
+        Colors.turquoise.storage+Colors.red.storage+Colors.green.storage
+      ),
+
+      //Add a bit of skewness
+      transform: Matrix4.rotationZ(0.13),
+    )
+  );
+
+  // Start drawing
   window.animationFrame.then(draw);
 }
 
