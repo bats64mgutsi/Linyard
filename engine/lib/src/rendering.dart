@@ -64,7 +64,7 @@ class Renderable {
   final Float32List   vertices;     // vec3
   final Int32List     indices;
   final Float32List   colors;       // vec4
-  final Matrix3       transform;
+  final Matrix4       transform;
   final Texture       texture;
   final Float32List   texCoords;
 
@@ -91,18 +91,20 @@ abstract class Renderer{
   /// Initialise resources and be ready for consuming renderables
   void initialise();
 
-  /// Release all resources and be ready for destruction. It is assumed that after calling this method
-  /// this renderer is no longer usable.
+  /// Release all resources and be ready for destruction.
+  /// 
+  /// It is assumed that after calling this method this renderer is no longer usable.
   void destroy();
 
   /// Set the background color of the drawing surface to [color]
   set clearColor(Vector4 color);
 
   /// Add a new [Renderable] to be drawn
-  void add(Renderable def);
+  LoadedRenderable add(Renderable def);
 
-  /// Stop drawing [renderable] and remove. Returns the removed renderable on success, null on error
-  /// returns true if [renderable] was removed
+  /// Stop drawing [renderable] and remove it. 
+  /// 
+  /// Returns true if [renderable] was removed
   bool remove(LoadedRenderable renderable);
 
   /// Pause the rendering of [renderable]
@@ -123,12 +125,11 @@ abstract class Renderer{
 
 }
 
-/// Represents a [Renderable] that has been loaded to used [Renderer]
+/// Represents a [Renderable] that has been loaded to a [Renderer]
 /// 
-/// It is safe to change or modify [transform] in rendering
-/// loop
+/// It is safe to change or modify [transform] in rendering loop
 class LoadedRenderable {
-  Matrix3 transform;
+  Matrix4 transform;
 }
 
 
@@ -145,11 +146,12 @@ typedef void ErrorCallback(Object error);
 
 /// A Loaded [Renderable] for the GlesRenderer
 class _GlesLoadedRenderable extends LoadedRenderable {
-  Buffer vertexVbo, colorVbo;
+  Buffer vertexVbo, colorVbo, indexVbo;
+  int vertexCount;
 }
 
 /// A Gles2 renderer. This renderer should work on web, mobile and desktop
-class GlesRenderer implements Renderer{
+class GlesRenderer implements Renderer {
 
   final RenderingContext gl;
   final ErrorCallback onError;
@@ -182,11 +184,11 @@ class GlesRenderer implements Renderer{
     String vShader = """
     attribute vec3 position;
     attribute vec4 color;
-    uniform mat3 transform;
+    uniform mat4 transform;
 
     varying vec4 vColor;
     void main(){
-      gl_Position = vec4(position*transform, 1.0);
+      gl_Position = vec4(position, 1.0)*transform;
       vColor = color;
     }
     """;
@@ -228,6 +230,7 @@ class GlesRenderer implements Renderer{
       onError(gl.getProgramInfoLog(program));
     }
 
+    gl.enable(WebGL.DEPTH_TEST);
     positionAttribute = gl.getAttribLocation(program, "position");
     colorAttribute = gl.getAttribLocation(program, "color");
     transfromUniform = gl.getUniformLocation(program, "transform");
@@ -248,10 +251,43 @@ class GlesRenderer implements Renderer{
   /// The corresponding vbo objects will be created and filled with
   /// [renderable]'s data. Therefore this method should only be called 
   /// after [initialise].
+  /// [def.vertices] and [def.indices] should not be null
   @override
-  void add(Renderable def){
+  LoadedRenderable add(Renderable def){
+    if(def.vertices == null || (def.vertices.length%3 != 0)){
+      onError("GlesRenderer: A renderable's vertex array length should be a multiple of three"
+      " since a vertex has three components");
+      return null;
+    }
 
-    
+    if(def.indices == null){
+      onError("GlesRenderer: Indices must be given");
+      return null;
+    }
+
+    var renderable = _GlesLoadedRenderable()..transform = def.transform == null ? Matrix3.identity(): def.transform;
+    renderable.vertexCount = def.indices.length;
+
+    // Load vertices
+    renderable.vertexVbo = gl.createBuffer();
+    gl.bindBuffer(WebGL.ARRAY_BUFFER, renderable.vertexVbo);
+    gl.bufferData(WebGL.ARRAY_BUFFER, def.vertices, WebGL.STATIC_DRAW);
+
+    // Load indices
+    renderable.indexVbo = gl.createBuffer();
+    gl.bindBuffer(WebGL.ELEMENT_ARRAY_BUFFER, renderable.indexVbo);
+    gl.bufferData(WebGL.ELEMENT_ARRAY_BUFFER, def.indices, WebGL.STATIC_DRAW);
+
+    // Load the colors, defaults to white
+    var colors = (def.colors != null && def.colors.length >= def.indices.length*4 ) 
+      ? def.colors: Float32List.fromList(List.filled(def.vertices.length*4, 0));
+
+    renderable.colorVbo = gl.createBuffer();
+    gl.bindBuffer(WebGL.ARRAY_BUFFER, renderable.colorVbo);
+    gl.bufferData(WebGL.ARRAY_BUFFER, colors, WebGL.STATIC_DRAW);
+
+    visible.add(renderable);
+    return renderable;
   }
 
   /// Remove [renderable] as an object to be drawn.
@@ -277,9 +313,31 @@ class GlesRenderer implements Renderer{
       visible.add(renderable);
   }
 
-  /// Draw all the visible [Renderable]s
+  /// Draw all the visible renderabless
   void draw(){
     gl.clear(WebGL.COLOR_BUFFER_BIT);
+
+    for( var renderable in visible ){
+
+      // Point position to vertices
+      gl.bindBuffer(WebGL.ARRAY_BUFFER, renderable.vertexVbo);
+      gl.vertexAttribPointer(positionAttribute, 3, WebGL.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(positionAttribute);
+
+      // Point color to colors
+      gl.bindBuffer(WebGL.ARRAY_BUFFER, renderable.colorVbo);
+      gl.vertexAttribPointer(colorAttribute, 4, WebGL.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(colorAttribute);
+
+      // Set transform uniform
+      gl.uniformMatrix4fv(transfromUniform, false, renderable.transform.storage);
+
+      // Bind indices vbo. This is where drawElemnts will read indices from
+      gl.bindBuffer(WebGL.ELEMENT_ARRAY_BUFFER, renderable.indexVbo);
+
+      // Draw
+      gl.drawElements(WebGL.TRIANGLES, renderable.vertexCount, WebGL.UNSIGNED_SHORT, 0);
+    }
   }
 
 
