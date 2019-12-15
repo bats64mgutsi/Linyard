@@ -23,9 +23,10 @@ void main() {
     return; 
   }
 
-  // Initialise a renderer
+  // Initialise a web renderer
   renderer = Renderer(
-    gl: gl,
+    Environment.WEB,
+    webGLContext: gl,
     onError: showError,
   );
   renderer.initialise();
@@ -45,7 +46,9 @@ void main() {
       ]),
 
       colors: Float32List.fromList(
-        Colors.turquoise.storage+Colors.red.storage+Colors.green.storage
+        Colors.turquoise.storage+
+        Colors.red.storage+
+        Colors.green.storage
       ),
 
       //Add a bit of skewness
