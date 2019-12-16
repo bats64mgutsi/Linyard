@@ -2,33 +2,37 @@
 
 import 'dart:html';
 import 'dart:typed_data';
+import 'dart:web_gl';
 
 import 'package:vector_math/vector_math.dart';
 import 'package:linyard/linyard.dart';
+import 'package:linyard/src/platform/webgl_server.dart';
 
 Renderer renderer;
+RenderingContext ctx;
 
 void draw(num delta){
+  int width = (window.innerWidth*.9).toInt();
+  int height = (window.innerHeight*.9).toInt();
+  ctx.canvas.width = width;
+  ctx.canvas.height = height;
+  renderer.viewport(width, height);
   renderer.draw();
   window.animationFrame.then(draw);
 }
  
-void main() { 
+void main() {
 
   // Get the view where the image will be shown
   CanvasElement canvas = document.getElementById("view");
-  var gl = canvas.getContext3d();
+  var gl = ctx = canvas.getContext3d();
   if(gl == null){
-    showError("Unfortunately your browser does not support OpenGL");
+    showError("Unfortunately your browser does not support WebGL");
     return; 
   }
 
   // Initialise a web renderer
-  renderer = Renderer(
-    Environment.WEB,
-    webGLContext: gl,
-    onError: showError,
-  );
+  renderer = Renderer(WebGlServer(gl)..intialise(), showError);
   renderer.initialise();
   renderer.clearColor = Vector4.random();
 
