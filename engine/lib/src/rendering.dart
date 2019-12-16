@@ -119,7 +119,7 @@ abstract class Renderer{
   /// Draw all the visible renderables
   void draw();
 
-  /// Returns an OpenGL Renderer that uses [glServer]
+  /// Returns an OpenGL Renderer that uses [glServer] for rendering
   factory Renderer(GlServer glServer, ErrorCallback onError){
     return _GlesRenderer(glServer, onError);
   }
