@@ -274,20 +274,20 @@ class _GlesRenderer implements Renderer {
     // Load vertices
     renderable.vertexVbo = gl.createBuffer();
     gl.bindBuffer(GL_ARRAY_BUFFER, renderable.vertexVbo);
-    gl.bufferData(GL_ARRAY_BUFFER, def.vertices, GL_STATIC_DRAW);
+    gl.bufferData(GL_ARRAY_BUFFER, def.vertices.buffer, GL_STATIC_DRAW);
 
     // Load indices
     renderable.indexVbo = gl.createBuffer();
     gl.bindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderable.indexVbo);
-    gl.bufferData(GL_ELEMENT_ARRAY_BUFFER, def.indices, GL_STATIC_DRAW);
+    gl.bufferData(GL_ELEMENT_ARRAY_BUFFER, def.indices.buffer, GL_STATIC_DRAW);
 
     // Load the colors, defaults to white
     var colors = (def.colors != null && def.colors.length >= def.indices.length*4 ) 
-      ? def.colors: Float32List.fromList(List.filled(def.vertices.length*4, 0));
+      ? def.colors: Float32List.fromList(List.filled(def.vertices.buffer.lengthInBytes, 0));
 
     renderable.colorVbo = gl.createBuffer();
     gl.bindBuffer(GL_ARRAY_BUFFER, renderable.colorVbo);
-    gl.bufferData(GL_ARRAY_BUFFER, colors, GL_STATIC_DRAW);
+    gl.bufferData(GL_ARRAY_BUFFER, colors.buffer, GL_STATIC_DRAW);
 
     visible.add(renderable);
     return renderable;

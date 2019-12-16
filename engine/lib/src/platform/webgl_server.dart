@@ -1,4 +1,5 @@
 
+import 'dart:typed_data';
 import 'dart:web_gl';
 
 import 'package:vector_math/vector_math.dart';
@@ -23,7 +24,8 @@ class WebGlServer extends GlServer{
   WebGlServer(RenderingContext context): super(context);
 
   /// Prepares the the server for rendering.
-  void intialise(){
+  @override
+  void initialise(){
     var ctx = context as RenderingContext;
 
     createShader = ctx.createShader;
@@ -45,7 +47,7 @@ class WebGlServer extends GlServer{
     getUniformLocation = (Object program, String name) => ctx.getUniformLocation(program, name);
     createBuffer = ctx.createBuffer;
     bindBuffer = (int target, Object buffer) => ctx.bindBuffer(target, buffer);
-    bufferData = ctx.bufferData;
+    bufferData = (int target, ByteBuffer data, int usage) => ctx.bufferData(target, data, usage);
     vertexAttribPointer = ctx.vertexAttribPointer;
     enableVertexAttribArray = ctx.enableVertexAttribArray;
     uniformMatrix4f = (Object location, bool transpose, Matrix4 data)
@@ -54,6 +56,7 @@ class WebGlServer extends GlServer{
   }
 
   /// Does nothing
+  @override
   void destroy(){}
 
 }

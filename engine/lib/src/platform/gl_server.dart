@@ -1,4 +1,6 @@
 
+import 'dart:typed_data';
+
 import 'package:vector_math/vector_math.dart';
 
 
@@ -31,7 +33,7 @@ const int GL_UNSIGNED_SHORT = 0x1403;
 
 
 typedef GlCreateShader = Object Function(int type);
-typedef GlShaderSource = void Function(Object Shader, String src);
+typedef GlShaderSource = void Function(Object shader, String src);
 typedef GlCompileShader = void Function(Object shader);
 typedef GlCreateProgram = Object Function();
 typedef GlAttachShader = void Function(Object program, Object shader);
@@ -49,7 +51,7 @@ typedef GlGetAttribLocation = int Function(Object program, String name);
 typedef GlGetUniformLocation = Object Function(Object program, String name);
 typedef GlCreateBuffer = Object Function();
 typedef GlBindBuffer = void Function(int target, Object buffer);
-typedef GlBufferData = void Function(int target, dynamic data_OR_size, int usage);
+typedef GlBufferData = void Function(int target, ByteBuffer data, int usage);
 typedef GlVertexAttribPointer = void Function(int index, int size, int type, bool normalised, int stride, int offset);
 typedef GlEnableVertexAttribArray = void Function(int index);
 typedef GlUniformMatrix4f = void Function(Object location, bool transpose, Matrix4 data);
@@ -74,7 +76,7 @@ abstract class GlServer {
   /// 
   /// This is where dynamic libraries can be loaded and the gl methods
   /// intitialised
-  void intialise();
+  void initialise();
 
   /// Release any Resources that may be used by the server
   /// 
