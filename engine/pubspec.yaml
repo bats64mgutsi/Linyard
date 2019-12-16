@@ -5,3 +5,4 @@ environment:
 
 dependencies:
   vector_math: ^2.0.8
+  opengl: ^0.1.0+2
