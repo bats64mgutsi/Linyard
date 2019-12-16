@@ -32,7 +32,7 @@ void main() {
   }
 
   // Initialise a web renderer
-  renderer = Renderer(WebGlServer(gl)..intialise(), showError);
+  renderer = Renderer(WebGlServer(gl)..initialise(), showError);
   renderer.initialise();
   renderer.clearColor = Vector4.random();
 
