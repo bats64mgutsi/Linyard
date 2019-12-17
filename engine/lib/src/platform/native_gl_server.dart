@@ -11,6 +11,18 @@ import 'package:vector_math/vector_math.dart';
 import 'gl_server.dart';
 
 /// Implements [GlServer] on top of OpenGL 4.6 for Windows and Linux rendering
+/// 
+///Usage:
+/// ```dart
+/// var gl = new NativeGlServer(native_window_rendering_context);
+/// gl.initialise();
+/// 
+/// // Use GL
+/// //...
+/// 
+/// // Destroy
+/// gl.destroy();
+/// ```
 class NativeGLServer extends GlServer {
 
   NativeGLServer(Object context): super(context);

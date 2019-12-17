@@ -13,3 +13,9 @@ import 'src/platform/gl_server.dart';
 
 
 part 'src/rendering.dart';
+part 'src/audio.dart';
+part 'src/dynamics.dart';
+part 'src/hud.dart';
+part 'src/io.dart';
+part 'src/physics.dart';
+part 'src/streaming.dart';

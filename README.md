@@ -5,19 +5,21 @@ managers or central classes, almost everything is treated as data.
 
 ## Running the examples
 
-You must have the Dart SDK installed. Its bin folder shoudld be on your PATH
-variable. Use the [run.dart](tools/run.dart) script to the examples or Linyard apps of your own. Be sure to first run *pub get* on all folders containing a
-*pubspec.yaml* file.
+You must have the Dart SDK installed. Its bin folder shoudld be in your PATH
+variable. Use the [run.dart](tools/run.dart) script to run the examples or Linyard apps of your own. Be sure to first run ```pub get``` on all folders containing a
+```pubspec.yaml``` file.
 
-### usage
-
-dart run.dart [mainScript] [target]
+```shell
+C:\Linyard2D\tools> dart run.dart [mainScript] [target]
+```
 
 1. mainScript must contain a top level main function
 2. target should be **onWeb**, **onDesktop**, or **onAndroid**
 
-As an example try runnning the [web_renderer](examples/web_rendering/web_rendering.dart) example with:
+As an example try runnning the [web_rendering](examples/web_rendering/web_rendering.dart) example:
 
-* dart run.dart ../examples/web_rendering/web_rendering.dart onWeb
+```shell
+C:\Linyard2D\tools> dart run.dart ../examples/web_rendering/web_rendering.dart onWeb
+```
 
-You can continue editing your source files while your app is running, the [run.dart](tools/run.dart) script will compile it automatically on save. You just need have to refresh your browser after every save.
+Watch the output to get the local url of your app. You can continue editing your source files while your app is running, the [run.dart](tools/run.dart) script will compile it automatically on save. You just need have to refresh your browser after every save.

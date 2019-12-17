@@ -138,7 +138,7 @@ void runWeb(Directory source, File mainScript, Directory bin) async {
     }
     );
 
-    print("Access your app at: http://localhost:${server.port}");
+    print("Access your app at: http://localhost:${server.port}\n");
 
   });
 
