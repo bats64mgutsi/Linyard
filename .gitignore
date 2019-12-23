@@ -20,5 +20,5 @@ doc/api/
 *.js.deps
 *.js.map
 
-# Linyard build tool builds to a bin folder
+# Linyard SDK builds
 bin/
